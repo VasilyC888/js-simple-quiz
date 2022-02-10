@@ -78,7 +78,7 @@ function showQuestion() {
 }
 
 function checkAnswer() {
-	const checkedRadio = listContainer.querySelector('input[type="radio"]:cheked')
+	const checkedRadio = listContainer.querySelector('input[type="radio"]:checked')
 
 	if (!checkedRadio) {
 		submitBtn.blur()
@@ -87,5 +87,56 @@ function checkAnswer() {
 
 	const userAnswer = parseInt(checkedRadio.value)
 
+	if (userAnswer === questions[questionIndex]['correct']) {
+		score++
+	}
 
+	if (questionIndex === questions.length - 1){
+		clearPage()
+		showResults()
+
+	} else {
+		questionIndex++
+		clearPage()
+		showQuestion()
+	}
 }
+
+
+function showResults() {
+	const resultTemplate =
+	`
+			<h2 class="title">%title%</h2>
+			<h3 class="summary">%message%</h3>
+			<p class="result">%result%</p>
+	`
+
+	let title, message
+
+	if (score === questions.length) {
+		title = 'Поздравляем! &#127881;'
+		message = 'Вы ответили верно на все вопросы! &#128526;&#129305;'
+	} else if ((score * 100) / questions.length >= 50) {
+		title = 'Неплохой результат! &#128521;'
+		message = 'Вы дали более половины правильных ответов &#128077;'
+	} else {
+		title = 'Стоит постараться &#128528;'
+		message = 'Пока у вас меньше половины правильных ответов'
+	}
+
+	let result = `${score} из ${questions.length}`
+
+	const finalMessage = resultTemplate
+	                        .replace('%title%', title)
+							.replace('%message%', message)
+							.replace('%result%', result)
+
+	headerContainer.innerHTML = finalMessage
+
+	submitBtn.blur()
+	submitBtn.innerHTML = 'Начать заново'
+	submitBtn.onclick = () => history.go()
+}
+
+
+
